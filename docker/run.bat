@@ -1,0 +1,1 @@
+docker run --name schedule -d -p 8091:3306 scheduledb:latest

@@ -1,0 +1,6 @@
+FROM mysql:latest
+ENV MYSQL_DATABASE schedule
+ENV MYSQL_USER schedule
+ENV MYSQL_PASSWORD schedule
+ENV MYSQL_ROOT_PASSWORD root
+COPY init.sql docker-entrypoint-initdb.d/init.sql
