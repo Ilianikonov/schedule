@@ -8,5 +8,5 @@ import java.util.List;
 @Data
 public class DepoService {
     private String name;
-    private List<RouteService> routeServices = new ArrayList<>();
+    private List<RouteService> routeServices;
 }
