@@ -7,5 +7,5 @@ import java.util.List;
 @Data
 public class RouteDto {
     private String number;
-    private List <TimeDto> timeDtos = new ArrayList<>();
+    private List <TimeDto> timeDto = new ArrayList<>();
 }

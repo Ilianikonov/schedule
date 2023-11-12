@@ -6,5 +6,5 @@ import java.util.List;
 @Data
 public class DepoDto {
     private String name;
-    private List<RouteDto> routeDtos;
+    private List<RouteDto> routeDto;
 }
