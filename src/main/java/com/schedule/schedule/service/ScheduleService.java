@@ -6,6 +6,7 @@ import com.schedule.schedule.service.entityService.ScheduleDto;
 import com.schedule.schedule.service.entityService.TimeDto;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
+import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -31,16 +32,16 @@ public class ScheduleService {
         scheduleServiceWeekdays.setDepoDtos(getDepoServicesOnlyTable(sheet, 0));
         for (DepoDto depoDto : scheduleServiceWeekdays.getDepoDtos()) {
             depoDto.setRouteDtos(getAllRoutesBelongingToDepo(sheet, depoDto, 0));
-//            for (RouteService routeService: depoService.getRouteServices()) {
-//             routeService.setTimeServices(getTotalTimeAndObkForTheRoute(sheet, routeService, 0));
-//            }
+            for (RouteDto routeDto: depoDto.getRouteDtos()) {
+                routeDto.setTimeDtos(getTotalTimeAndObkForTheRoute(sheet, routeDto, true));
+            }
         }
         System.out.println(scheduleServiceWeekdays.getDate());
         System.out.println(scheduleServiceWeekend.getDate());
         System.out.println(getDepoServicesOnlyTable(sheet,0));
         System.out.println(getNamesOfTimes(sheet,true).toString());
         System.out.println(getAllRoutesBelongingToDepo(sheet, getDepoServicesOnlyTable(sheet,0).get(3), 0));
-        System.out.println(getTotalTimeAndObkForTheRoute(sheet,getAllRoutesBelongingToDepo(sheet, getDepoServicesOnlyTable(sheet,0).get(3), 0).get(1),0));
+        System.out.println(getTotalTimeAndObkForTheRoute(sheet,getAllRoutesBelongingToDepo(sheet, getDepoServicesOnlyTable(sheet,0).get(3), 0).get(1),true));
         System.out.println(scheduleServiceWeekdays.toString());
     }
     private List<TimeDto> getNamesOfTimes(Sheet sheet, boolean weekdays){
@@ -70,16 +71,22 @@ public class ScheduleService {
         return timeDtos;
     }
 
-    private List<TimeDto> getTotalTimeAndObkForTheRoute(Sheet sheet, RouteDto routeDto, int addressOrientationColumn){
+    private List<TimeDto> getTotalTimeAndObkForTheRoute(Sheet sheet, RouteDto routeDto, boolean weekdays){
         List<TimeDto> timeDtos = getNamesOfTimes(sheet, true);
+        int addressOrientationColumn;
+        if (weekdays){
+            addressOrientationColumn = 0;
+        } else {
+            addressOrientationColumn = 23;
+        }
         for (Row row: sheet) {
             if (row.getCell(addressOrientationColumn).toString().equals(routeDto.getNumber())) {
                 int count = addressOrientationColumn;
                 for (TimeDto timeDto : timeDtos) {
                     count++;
-                    timeDto.setTotal(Integer.valueOf((int) row.getCell(count).getNumericCellValue()));
+                    timeDto.setTotal((int)row.getCell(count).getNumericCellValue());
                     count++;
-                    timeDto.setObk(Integer.valueOf((int) row.getCell(count).getNumericCellValue()));
+                    timeDto.setObk((int)row.getCell(count).getNumericCellValue());
                 }
                 timeDtos.get(timeDtos.size() - 1).setFlights(Integer.valueOf((int) row.getCell( timeDtos.size()*2 + 1).getNumericCellValue()));
                 return timeDtos;
