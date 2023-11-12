@@ -28,10 +28,11 @@ public class ScheduleService {
         XSSFWorkbook workbook = new XSSFWorkbook(schedule);
         Sheet sheet = workbook.getSheetAt(0);
         System.out.println(buildWeekendSchedule(sheet, 0));
+        System.out.println(buildWeekendSchedule(sheet, 23).getDepoDto().get(0).getRouteDto().get(0).getTimeDto().toString());
 //        System.out.println(getDepoServicesOnlyTable(sheet,0));
 //        System.out.println(getNamesOfTimes(sheet,sheet).toString());
 //        System.out.println(getAllRoutesBelongingToDepo(sheet, getDepoServicesOnlyTable(sheet,0).get(3), 0));
-        System.out.println(getTotalTimeAndObkForTheRoute(sheet,getAllRoutesBelongingToDepo(sheet, getDepoServicesOnlyTable(sheet,0).get(3), 0).get(1),0));
+//       System.out.println(getTotalTimeAndObkForTheRoute(sheet,getAllRoutesBelongingToDepo(sheet, getDepoServicesOnlyTable(sheet,0).get(3), 0).get(1),0));
 
     }
 
@@ -76,19 +77,19 @@ public class ScheduleService {
 
     private List<TimeDto> getTotalTimeAndObkForTheRoute(Sheet sheet, RouteDto routeDto, int shift){
         List<TimeDto> timeDtos = getNamesOfTimes(sheet, shift);
-        for (int x = shift + 7; x <= sheet.getLastRowNum(); x++) {
+        for (int x = 7; x <= sheet.getLastRowNum(); x++) {
             if (sheet.getRow(x).getCell(shift).toString().equals(routeDto.getNumber())) {
                 int count = 0;
                 for (int i = 1; i < timeDtos.size() * 2; i++) {
                     if (i % 2 != 0){
-                        timeDtos.get(count).setTotal((int)sheet.getRow(x).getCell(i).getNumericCellValue());
+                        timeDtos.get(count).setTotal((int)sheet.getRow(x).getCell(shift + i).getNumericCellValue());
                     } else {
-                        timeDtos.get(count).setObk((int)sheet.getRow(x).getCell(i).getNumericCellValue());
+                        timeDtos.get(count).setObk((int)sheet.getRow(x).getCell(shift + i).getNumericCellValue());
                         count++;
                     }
 
                 }
-                timeDtos.get(timeDtos.size() - 1).setFlights(((int) sheet.getRow(x).getCell( timeDtos.size()*2 + 1).getNumericCellValue()));
+                timeDtos.get(timeDtos.size() - 1).setFlights(((int) sheet.getRow(x).getCell( timeDtos.size()*2 + 1 + shift).getNumericCellValue()));
                 return timeDtos;
             }
         }
@@ -128,13 +129,10 @@ public class ScheduleService {
             }
             cell1ToRow = convertCellToString(sheet.getRow(i).getCell(shift));
             cellDepoService = convertCellToString(sheet.getRow(i + 1).getCell(shift));
-            cellEnd = convertCellToString(sheet.getRow(i + 2).getCell(shift));
-            if (cellDepoService != null && cell1ToRow.equals(ITOGO_CELL_VALUE)){
+            if (cellDepoService != null && cell1ToRow.equals(ITOGO_CELL_VALUE)) {
                 DepoDto depoDto1 = new DepoDto();
                 depoDto1.setName(cellDepoService);
                 depoDtos.add(depoDto1);
-            } else if (cellEnd != null && cellEnd.equals(VSEGO_CELL_VALUE)){
-                return depoDtos;
             }
         }
         return depoDtos;
