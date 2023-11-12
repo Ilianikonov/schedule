@@ -5,7 +5,7 @@ import lombok.Data;
 import java.util.ArrayList;
 import java.util.List;
 @Data
-public class RouteService {
+public class RouteDto {
     private String number;
-    private List <TimeService> timeServices = new ArrayList<>();
+    private List <TimeDto> timeDtos = new ArrayList<>();
 }
