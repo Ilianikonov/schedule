@@ -1,46 +1,88 @@
 package com.schedule.schedule.service;
 
-import com.schedule.schedule.service.entityService.DepoDto;
-import com.schedule.schedule.service.entityService.RouteDto;
-import com.schedule.schedule.service.entityService.ScheduleDto;
-import com.schedule.schedule.service.entityService.TimeDto;
-import lombok.Data;
+import com.schedule.schedule.dao.DepoRepository;
+import com.schedule.schedule.dao.RouteRepository;
+import com.schedule.schedule.dao.ScheduleRepository;
+import com.schedule.schedule.entity.Depo;
+import com.schedule.schedule.entity.Route;
+import com.schedule.schedule.entity.Schedule;
+import com.schedule.schedule.service.dtoService.DepoDto;
+import com.schedule.schedule.service.dtoService.RouteDto;
+import com.schedule.schedule.service.dtoService.ScheduleDto;
+import com.schedule.schedule.service.dtoService.TimeDto;
 import lombok.RequiredArgsConstructor;
 import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class ScheduleService {
+    private final ScheduleRepository scheduleRepository;
+    private final DepoRepository depoRepository;
+    private final RouteRepository routeRepository;
     private static String ITOGO_CELL_VALUE = "Итого";
-    private static String VSEGO_CELL_VALUE = "Всего";
     public void uploadSchedule(InputStream schedule) throws IOException {
         XSSFWorkbook workbook = new XSSFWorkbook(schedule);
         Sheet sheet = workbook.getSheetAt(0);
-        System.out.println(buildWeekendSchedule(sheet, 0));
-        System.out.println(buildWeekendSchedule(sheet, 23).getDepoDto().get(0).getRouteDto().get(0).getTimeDto().toString());
+        int shiftWeekdays = 0;
+        int shiftWeekend = 23;
+        saveScheduleToDao(sheet, shiftWeekdays);
+        saveScheduleToDao(sheet, shiftWeekend);
+//        System.out.println(buildWeekendSchedule(sheet, 0));
+//        System.out.println(buildWeekendSchedule(sheet, 23).getDepoDto().get(0).getRouteDto().get(0).getTimeDto().toString());
 //        System.out.println(getDepoServicesOnlyTable(sheet,0));
 //        System.out.println(getNamesOfTimes(sheet,sheet).toString());
 //        System.out.println(getAllRoutesBelongingToDepo(sheet, getDepoServicesOnlyTable(sheet,0).get(3), 0));
 //       System.out.println(getTotalTimeAndObkForTheRoute(sheet,getAllRoutesBelongingToDepo(sheet, getDepoServicesOnlyTable(sheet,0).get(3), 0).get(1),0));
+    }
+    private void saveScheduleToDao(Sheet sheet, int shift){
+        ScheduleDto scheduleDto = buildSchedule(sheet, shift);
+        System.out.println(scheduleDto.getDate());
+        for (DepoDto depoDto : scheduleDto.getDepoDto()) {
+            long depoId = depoRepository.save(convertToDepo(depoDto)).getId();
+            for (RouteDto routeDto : depoDto.getRouteDto()) {
+                long routeId = routeRepository.save(convertToRoute(routeDto)).getId();
+                for (TimeDto timeDto : routeDto.getTimeDto()) {
+                    Schedule schedule = new Schedule();
+                    schedule.setTime(timeDto.getName());
+                    schedule.setDate(scheduleDto.getDate());
+                    schedule.setTimeTotal(timeDto.getTotal());
+                    schedule.setTimeObk(timeDto.getObk());
+                    schedule.setDepoId(depoId);
+                    schedule.setRouteId(routeId);
+                    System.out.println(schedule.getDate());
+                    scheduleRepository.save(schedule);
+                }
+            }
+        }
+    }
 
+    private Route convertToRoute(RouteDto routeDto){
+        Route route = new Route();
+        route.setNumber(routeDto.getNumber());
+        return route;
+    }
+
+    private Depo convertToDepo(DepoDto depoDto){
+        Depo depo = new Depo();
+        depo.setName(depoDto.getName());
+        return depo;
     }
 
     private LocalDateTime getDateSchedule(Sheet sheet, int shift){
         return sheet.getRow(1).getCell(shift + 3).getLocalDateTimeCellValue();
     }
 
-    private ScheduleDto buildWeekendSchedule(Sheet sheet, int shift) {
+    private ScheduleDto buildSchedule(Sheet sheet, int shift) {
         ScheduleDto scheduleDto = new ScheduleDto();
         scheduleDto.setDate(getDateSchedule(sheet, shift));
         scheduleDto.setDepoDto(getDepoServicesOnlyTable(sheet, shift));

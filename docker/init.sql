@@ -7,7 +7,6 @@ create table route
     id       BIGINT auto_increment primary key,
     number varchar(50) NOT NULL unique
 );
-
 create index route_id_index on route(id);
 create index route_number_index on route(number);
 
@@ -16,7 +15,6 @@ create table depo
   id BIGINT auto_increment primary key,
   name varchar(500) not null unique
 );
-
 create index depo_id_index on depo(id);
 create index depo_name_index on depo(name);
 
@@ -24,9 +22,10 @@ create table schedule
 (
     id BIGINT auto_increment primary key,
     date date not null,
-    time varchar(500) not null,
+    time varchar(50) not null,
     depo_id int references depo (id),
-    route_id int references route (id)
+    route_id int references route (id),
+    time_total int,
+    time_obk int
 );
-
 create index schedule_date_index on schedule(date);

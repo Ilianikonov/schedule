@@ -1,4 +1,4 @@
-package com.schedule.schedule.service.entityService;
+package com.schedule.schedule.service.dtoService;
 
 import lombok.Data;
 
