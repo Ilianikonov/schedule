@@ -3,27 +3,24 @@ package com.schedule.schedule.service;
 import com.schedule.schedule.dao.DepoRepository;
 import com.schedule.schedule.dao.RouteRepository;
 import com.schedule.schedule.dao.ScheduleRepository;
+import com.schedule.schedule.dto.*;
 import com.schedule.schedule.entity.Depo;
 import com.schedule.schedule.entity.Route;
 import com.schedule.schedule.entity.Schedule;
-import com.schedule.schedule.service.dtoService.DepoDto;
-import com.schedule.schedule.service.dtoService.RouteDto;
-import com.schedule.schedule.service.dtoService.ScheduleDto;
-import com.schedule.schedule.service.dtoService.TimeDto;
 import lombok.RequiredArgsConstructor;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.hibernate.Session;
-import org.springframework.data.jpa.provider.HibernateUtils;
-import org.springframework.orm.hibernate5.HibernateTransactionManager;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -33,6 +30,7 @@ public class ScheduleService {
     private final DepoRepository depoRepository;
     private final RouteRepository routeRepository;
     private static String ITOGO_CELL_VALUE = "Итого";
+
     public void uploadSchedule(InputStream schedule) throws IOException {
         XSSFWorkbook workbook = new XSSFWorkbook(schedule);
         Sheet sheet = workbook.getSheetAt(0);
@@ -40,14 +38,52 @@ public class ScheduleService {
         int shiftWeekend = 23;
         saveScheduleToDao(sheet, shiftWeekdays);
         saveScheduleToDao(sheet, shiftWeekend);
-//        System.out.println(getDateSchedule(sheet, 0));
-//        System.out.println(buildWeekendSchedule(sheet, 0));
-//      System.out.println(buildSchedule(sheet, shiftWeekdays).getDepoDto().get(1).getRouteDto().get(6).getTimeDto().toString());
-//       System.out.println(getDepoServicesOnlyTable(sheet,0));
-//        System.out.println(getNamesOfTimes(sheet,sheet).toString());
-//        System.out.println(getAllRoutesBelongingToDepo(sheet, getDepoServicesOnlyTable(sheet,0).get(3), 0));
-//       System.out.println(getTotalTimeAndObkForTheRoute(sheet,getAllRoutesBelongingToDepo(sheet, getDepoServicesOnlyTable(sheet,0).get(3), 0).get(1),0));
     }
+
+
+    public List<ScheduleDto> getSchedule(FilterDto filterDto) {
+        return null;
+    }
+
+
+    public List<ScheduleDto> getCurrentSchedule() throws ParseException {
+        LocalDateTime date = LocalDateTime.now();
+        return convertScheduleToScheduleDto(scheduleRepository.getSchedulesByDate(date));
+    }
+    private List<ScheduleDto> convertScheduleToScheduleDto(List<Schedule> scheduleList) throws ParseException {
+        List<ScheduleDto> scheduleDtoList = new ArrayList<>();
+        for (Schedule schedule: scheduleList) {
+            ScheduleDto scheduleDto = new ScheduleDto();
+            scheduleDto.setId(schedule.getId());
+            DepoDto depoDto = new DepoDto();
+            depoDto.setId(schedule.getDepoId());
+            depoDto.setName(depoRepository.getReferenceById(depoDto.getId()).getName());
+            RouteDto routeDto = new RouteDto();
+            routeDto.setId(schedule.getRouteId());
+            routeDto.setNumber(routeRepository.getReferenceById(routeDto.getId()).getNumber());
+            TimeDto timeDto = new TimeDto();
+            timeDto.setName(schedule.getTime());
+            timeDto.setTotal(schedule.getTimeTotal());
+            timeDto.setObk(schedule.getTimeObk());
+            timeDto.setFlights(schedule.getTimeFlights());
+            List<TimeDto> timeDtoList = new ArrayList<>();
+            timeDtoList.add(timeDto);
+            routeDto.setTimeDto(timeDtoList);
+            List<RouteDto> routeDtoList = new ArrayList<>();
+            routeDtoList.add(routeDto);
+            depoDto.setRouteDto(routeDtoList);
+            List<DepoDto> depoDtoListList = new ArrayList<>();
+            depoDtoListList.add(depoDto);
+            scheduleDto.setDepoDto(depoDtoListList);
+            scheduleDtoList.add(scheduleDto);
+        }
+        return scheduleDtoList;
+    }
+    private Date convertToData(LocalDateTime localDateTime) throws ParseException {
+        SimpleDateFormat formatDate = new SimpleDateFormat();
+        return formatDate.parse(localDateTime.toLocalDate().toString());
+    }
+
     @Transactional
     public void saveScheduleToDao(Sheet sheet, int shift){
         ScheduleDto scheduleDto = buildSchedule(sheet, shift);
