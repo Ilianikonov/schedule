@@ -13,7 +13,7 @@ create index route_number_index on route(number);
 create table depo
 (
   id BIGINT auto_increment primary key,
-  name varchar(500) not null unique
+  name varchar(500) NOT NULL unique
 );
 create index depo_id_index on depo(id);
 create index depo_name_index on depo(name);

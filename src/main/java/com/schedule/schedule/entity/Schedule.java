@@ -15,7 +15,7 @@ public class Schedule {
     @Column(nullable = false)
     private LocalDateTime date;
     private String time;
-    @JoinColumn(name = "id")
+    @JoinColumn(name = "id", nullable = false)
     private long depoId;
     @JoinColumn(name = "id", nullable = false)
     private long routeId;
