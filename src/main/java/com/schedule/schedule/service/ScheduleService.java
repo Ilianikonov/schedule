@@ -14,6 +14,9 @@ import lombok.RequiredArgsConstructor;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.hibernate.Session;
+import org.springframework.data.jpa.provider.HibernateUtils;
+import org.springframework.orm.hibernate5.HibernateTransactionManager;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,20 +40,27 @@ public class ScheduleService {
         int shiftWeekend = 23;
         saveScheduleToDao(sheet, shiftWeekdays);
         saveScheduleToDao(sheet, shiftWeekend);
+//        System.out.println(getDateSchedule(sheet, 0));
 //        System.out.println(buildWeekendSchedule(sheet, 0));
 //        System.out.println(buildWeekendSchedule(sheet, 23).getDepoDto().get(0).getRouteDto().get(0).getTimeDto().toString());
-//        System.out.println(getDepoServicesOnlyTable(sheet,0));
+//       System.out.println(getDepoServicesOnlyTable(sheet,0));
 //        System.out.println(getNamesOfTimes(sheet,sheet).toString());
 //        System.out.println(getAllRoutesBelongingToDepo(sheet, getDepoServicesOnlyTable(sheet,0).get(3), 0));
 //       System.out.println(getTotalTimeAndObkForTheRoute(sheet,getAllRoutesBelongingToDepo(sheet, getDepoServicesOnlyTable(sheet,0).get(3), 0).get(1),0));
     }
-    private void saveScheduleToDao(Sheet sheet, int shift){
+    @Transactional
+    public void saveScheduleToDao(Sheet sheet, int shift){
         ScheduleDto scheduleDto = buildSchedule(sheet, shift);
-        System.out.println(scheduleDto.getDate());
         for (DepoDto depoDto : scheduleDto.getDepoDto()) {
-            long depoId = depoRepository.save(convertToDepo(depoDto)).getId();
+            long depoId = depoRepository.getDepoByName(depoDto.getName()).getId();
+            if(depoId == 0) {
+                depoId = depoRepository.save(convertToDepo(depoDto)).getId();
+            }
             for (RouteDto routeDto : depoDto.getRouteDto()) {
-                long routeId = routeRepository.save(convertToRoute(routeDto)).getId();
+                long routeId = routeRepository.getRouteByNumber(routeDto.getNumber()).getId();
+                if (routeId == 0) {
+                    routeId = routeRepository.save(convertToRoute(routeDto)).getId();
+                }
                 for (TimeDto timeDto : routeDto.getTimeDto()) {
                     Schedule schedule = new Schedule();
                     schedule.setTime(timeDto.getName());
@@ -59,7 +69,6 @@ public class ScheduleService {
                     schedule.setTimeObk(timeDto.getObk());
                     schedule.setDepoId(depoId);
                     schedule.setRouteId(routeId);
-                    System.out.println(schedule.getDate());
                     scheduleRepository.save(schedule);
                 }
             }
@@ -79,7 +88,7 @@ public class ScheduleService {
     }
 
     private LocalDateTime getDateSchedule(Sheet sheet, int shift){
-        return sheet.getRow(1).getCell(shift + 3).getLocalDateTimeCellValue();
+        return sheet.getRow(1).getCell(shift + 4).getLocalDateTimeCellValue();
     }
 
     private ScheduleDto buildSchedule(Sheet sheet, int shift) {
