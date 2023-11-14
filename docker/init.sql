@@ -26,6 +26,7 @@ create table schedule
     depo_id int references depo (id),
     route_id int references route (id),
     time_total int,
-    time_obk int
+    time_obk int,
+    time_flights int
 );
 create index schedule_date_index on schedule(date);

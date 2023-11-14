@@ -42,7 +42,7 @@ public class ScheduleService {
         saveScheduleToDao(sheet, shiftWeekend);
 //        System.out.println(getDateSchedule(sheet, 0));
 //        System.out.println(buildWeekendSchedule(sheet, 0));
-//        System.out.println(buildWeekendSchedule(sheet, 23).getDepoDto().get(0).getRouteDto().get(0).getTimeDto().toString());
+//      System.out.println(buildSchedule(sheet, shiftWeekdays).getDepoDto().get(1).getRouteDto().get(6).getTimeDto().toString());
 //       System.out.println(getDepoServicesOnlyTable(sheet,0));
 //        System.out.println(getNamesOfTimes(sheet,sheet).toString());
 //        System.out.println(getAllRoutesBelongingToDepo(sheet, getDepoServicesOnlyTable(sheet,0).get(3), 0));
@@ -52,14 +52,18 @@ public class ScheduleService {
     public void saveScheduleToDao(Sheet sheet, int shift){
         ScheduleDto scheduleDto = buildSchedule(sheet, shift);
         for (DepoDto depoDto : scheduleDto.getDepoDto()) {
-            long depoId = depoRepository.getDepoByName(depoDto.getName()).getId();
-            if(depoId == 0) {
+            long depoId;
+            if (depoRepository.getDepoByName(depoDto.getName()) == null){
                 depoId = depoRepository.save(convertToDepo(depoDto)).getId();
+            } else {
+                depoId = depoRepository.getDepoByName(depoDto.getName()).getId();
             }
             for (RouteDto routeDto : depoDto.getRouteDto()) {
-                long routeId = routeRepository.getRouteByNumber(routeDto.getNumber()).getId();
-                if (routeId == 0) {
+                long routeId;
+                if (routeRepository.getRouteByNumber(routeDto.getNumber()) == null){
                     routeId = routeRepository.save(convertToRoute(routeDto)).getId();
+                } else {
+                    routeId = routeRepository.getRouteByNumber(routeDto.getNumber()).getId();
                 }
                 for (TimeDto timeDto : routeDto.getTimeDto()) {
                     Schedule schedule = new Schedule();
@@ -67,6 +71,7 @@ public class ScheduleService {
                     schedule.setDate(scheduleDto.getDate());
                     schedule.setTimeTotal(timeDto.getTotal());
                     schedule.setTimeObk(timeDto.getObk());
+                    schedule.setTimeFlights(timeDto.getFlights());
                     schedule.setDepoId(depoId);
                     schedule.setRouteId(routeId);
                     scheduleRepository.save(schedule);
@@ -131,7 +136,7 @@ public class ScheduleService {
         for (int x = 7; x <= sheet.getLastRowNum(); x++) {
             if (sheet.getRow(x).getCell(shift).toString().equals(routeDto.getNumber())) {
                 int count = 0;
-                for (int i = 1; i < timeDtos.size() * 2; i++) {
+                for (int i = 1; i <= timeDtos.size() * 2; i++) {
                     if (i % 2 != 0){
                         timeDtos.get(count).setTotal((int)sheet.getRow(x).getCell(shift + i).getNumericCellValue());
                     } else {

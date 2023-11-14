@@ -15,14 +15,14 @@ public class Schedule {
     @Column(nullable = false)
     private LocalDateTime date;
     private String time;
-    @OneToOne(targetEntity = Depo.class)
     @JoinColumn(name = "id")
     private long depoId;
-    @OneToOne(targetEntity = Route.class)
     @JoinColumn(name = "id", nullable = false)
     private long routeId;
     @Column(name = "time_total")
     private Integer timeTotal;
     @Column(name = "time_obk")
     private Integer timeObk;
+    @Column(name = "time_flights")
+    private Integer timeFlights;
 }
