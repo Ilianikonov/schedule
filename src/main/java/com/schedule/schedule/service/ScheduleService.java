@@ -7,10 +7,14 @@ import com.schedule.schedule.dto.*;
 import com.schedule.schedule.entity.Depo;
 import com.schedule.schedule.entity.Route;
 import com.schedule.schedule.entity.Schedule;
+import com.schedule.schedule.entity.TimeRoute;
 import lombok.RequiredArgsConstructor;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.cfg.Configuration;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,12 +29,11 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class ScheduleService {
+public class ScheduleService implements ScheduleServiceInter {
     private final ScheduleRepository scheduleRepository;
-    private final DepoRepository depoRepository;
-    private final RouteRepository routeRepository;
     private static String ITOGO_CELL_VALUE = "Итого";
 
+    @Override
     public void uploadSchedule(InputStream schedule) throws IOException {
         XSSFWorkbook workbook = new XSSFWorkbook(schedule);
         Sheet sheet = workbook.getSheetAt(0);
@@ -40,43 +43,19 @@ public class ScheduleService {
         saveScheduleToDao(sheet, shiftWeekend);
     }
 
-
+    @Override
     public List<ScheduleDto> getSchedule(FilterDto filterDto) {
+
         return null;
     }
 
-
+    @Override
     public List<ScheduleDto> getCurrentSchedule() throws ParseException {
         LocalDateTime date = LocalDateTime.now();
         return convertScheduleToScheduleDto(scheduleRepository.getSchedulesByDate(date));
     }
     private List<ScheduleDto> convertScheduleToScheduleDto(List<Schedule> scheduleList) throws ParseException {
         List<ScheduleDto> scheduleDtoList = new ArrayList<>();
-        for (Schedule schedule: scheduleList) {
-            ScheduleDto scheduleDto = new ScheduleDto();
-            scheduleDto.setId(schedule.getId());
-            DepoDto depoDto = new DepoDto();
-            depoDto.setId(schedule.getDepoId());
-            depoDto.setName(depoRepository.getReferenceById(depoDto.getId()).getName());
-            RouteDto routeDto = new RouteDto();
-            routeDto.setId(schedule.getRouteId());
-            routeDto.setNumber(routeRepository.getReferenceById(routeDto.getId()).getNumber());
-            TimeDto timeDto = new TimeDto();
-            timeDto.setName(schedule.getTime());
-            timeDto.setTotal(schedule.getTimeTotal());
-            timeDto.setObk(schedule.getTimeObk());
-            timeDto.setFlights(schedule.getTimeFlights());
-            List<TimeDto> timeDtoList = new ArrayList<>();
-            timeDtoList.add(timeDto);
-            routeDto.setTimeDto(timeDtoList);
-            List<RouteDto> routeDtoList = new ArrayList<>();
-            routeDtoList.add(routeDto);
-            depoDto.setRouteDto(routeDtoList);
-            List<DepoDto> depoDtoListList = new ArrayList<>();
-            depoDtoListList.add(depoDto);
-            scheduleDto.setDepoDto(depoDtoListList);
-            scheduleDtoList.add(scheduleDto);
-        }
         return scheduleDtoList;
     }
     private Date convertToData(LocalDateTime localDateTime) throws ParseException {
@@ -87,45 +66,45 @@ public class ScheduleService {
     @Transactional
     public void saveScheduleToDao(Sheet sheet, int shift){
         ScheduleDto scheduleDto = buildSchedule(sheet, shift);
-        for (DepoDto depoDto : scheduleDto.getDepoDto()) {
-            long depoId;
-            if (depoRepository.getDepoByName(depoDto.getName()) == null){
-                depoId = depoRepository.save(convertToDepo(depoDto)).getId();
-            } else {
-                depoId = depoRepository.getDepoByName(depoDto.getName()).getId();
-            }
-            for (RouteDto routeDto : depoDto.getRouteDto()) {
-                long routeId;
-                if (routeRepository.getRouteByNumber(routeDto.getNumber()) == null){
-                    routeId = routeRepository.save(convertToRoute(routeDto)).getId();
-                } else {
-                    routeId = routeRepository.getRouteByNumber(routeDto.getNumber()).getId();
-                }
-                for (TimeDto timeDto : routeDto.getTimeDto()) {
-                    Schedule schedule = new Schedule();
-                    schedule.setTime(timeDto.getName());
-                    schedule.setDate(scheduleDto.getDate());
-                    schedule.setTimeTotal(timeDto.getTotal());
-                    schedule.setTimeObk(timeDto.getObk());
-                    schedule.setTimeFlights(timeDto.getFlights());
-                    schedule.setDepoId(depoId);
-                    schedule.setRouteId(routeId);
-                    scheduleRepository.save(schedule);
-                }
-            }
+        scheduleRepository.save(convertScheduleDtoToSchedule(scheduleDto));
+    }
+    private Schedule convertScheduleDtoToSchedule(ScheduleDto scheduleDto){
+        Schedule schedule = new Schedule();
+        schedule.setDate(scheduleDto.getDate());
+        schedule.setDepoList(convertToDepo(scheduleDto.getDepoDto()));
+        return schedule;
+    }
+    private List<Depo> convertToDepo(List<DepoDto> depoDtoList){
+        List<Depo> depoList = new ArrayList<>();
+        for (DepoDto depoDto : depoDtoList) {
+            Depo depo = new Depo();
+            depo.setName(depoDto.getName());
+            depo.setRoute(convertToRoute(depoDto.getRouteDto()));
+            depoList.add(depo);
         }
+        return depoList;
     }
-
-    private Route convertToRoute(RouteDto routeDto){
-        Route route = new Route();
-        route.setNumber(routeDto.getNumber());
-        return route;
+    private List<Route> convertToRoute(List<RouteDto> routeDtoList){
+        List<Route> routeList = new ArrayList<>();
+        for (RouteDto routeDto : routeDtoList) {
+            Route route = new Route();
+            route.setNumber(routeDto.getNumber());
+            route.setTimeRoutes(convertToTimeRoute(routeDto.getTimeDto()));
+            routeList.add(route);
+        }
+        return routeList;
     }
-
-    private Depo convertToDepo(DepoDto depoDto){
-        Depo depo = new Depo();
-        depo.setName(depoDto.getName());
-        return depo;
+    private List<TimeRoute> convertToTimeRoute(List<TimeDto> timeDtoList){
+        List<TimeRoute> timeRouteList = new ArrayList<>();
+        for (TimeDto timeDto : timeDtoList) {
+            TimeRoute timeRoute = new TimeRoute();
+            timeRoute.setName(timeDto.getName());
+            timeRoute.setTimeTotal(timeDto.getTotal());
+            timeRoute.setTimeObk(timeDto.getObk());
+            timeRoute.setTimeFlights(timeDto.getFlights());
+            timeRouteList.add(timeRoute);
+        }
+        return timeRouteList;
     }
 
     private LocalDateTime getDateSchedule(Sheet sheet, int shift){

@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @Entity
@@ -14,15 +15,6 @@ public class Schedule {
     private long id;
     @Column(nullable = false)
     private LocalDateTime date;
-    private String time;
-    @JoinColumn(name = "id", nullable = false)
-    private long depoId;
-    @JoinColumn(name = "id", nullable = false)
-    private long routeId;
-    @Column(name = "time_total")
-    private Integer timeTotal;
-    @Column(name = "time_obk")
-    private Integer timeObk;
-    @Column(name = "time_flights")
-    private Integer timeFlights;
+    @OneToMany(mappedBy = "schedule", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    private List<Depo> depoList;
 }
