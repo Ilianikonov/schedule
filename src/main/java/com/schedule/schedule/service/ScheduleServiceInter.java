@@ -10,6 +10,6 @@ import java.util.List;
 
 public interface ScheduleServiceInter {
     void uploadSchedule(InputStream schedule) throws IOException;
-    List<ScheduleDto> getSchedule(FilterDto filterDto);
+    List<ScheduleDto> getSchedule(FilterDto filterDto) throws ParseException;
     List<ScheduleDto> getCurrentSchedule() throws ParseException;
 }

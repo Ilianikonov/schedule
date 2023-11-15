@@ -14,9 +14,9 @@ public class Route {
     private long id;
     @Column(nullable = false)
     private String number;
-    @ManyToOne(fetch = FetchType.EAGER, cascade=CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY, cascade=CascadeType.ALL)
     @JoinColumn(name = "depo_id", referencedColumnName="id")
     private Depo depo;
-    @OneToMany(mappedBy = "route", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "route", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<TimeRoute> timeRoutes;
     }

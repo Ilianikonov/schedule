@@ -12,7 +12,7 @@ public class TimeRoute {
     private long id;
     @Column(nullable = false)
     private String name;
-    @ManyToOne(fetch = FetchType.EAGER, cascade=CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY, cascade=CascadeType.ALL)
     @JoinColumn(name = "route_id", referencedColumnName="id")
     private Route route;
     @Column(name = "time_total")
