@@ -12,6 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.List;
+import java.util.Map;
 
 public interface ScheduleController {
 
@@ -19,7 +20,7 @@ public interface ScheduleController {
     void uploadSchedule(@RequestParam("schedule") MultipartFile schedule) throws IOException;
 
     @GetMapping("/getSchedules")
-    List<ScheduleResponse> getSchedule(@RequestBody FilterRequest filterRequest) throws ParseException;
+    List<Map<String,Object>> getSchedule(@RequestBody FilterRequest filterRequest) throws ParseException;
     @GetMapping("/getSchedule")
-    List <ScheduleResponse> getCurrentSchedule() throws ParseException;
+    List<Map<String,Object>> getCurrentSchedule() throws ParseException;
 }
