@@ -8,13 +8,13 @@ public class FilterRequest {
     private LocalDate date_start; //Дата начала выборки
     private LocalDate date_end; //Дата конца выборки
     private Long depo;  //Номер депо (его id)
-    private Object route; //Номер маршрута (его number).
+    private String route; //Номер маршрута (его number).
 
-    public void setRoute(Object route) {
+    public void setRoute(String route) {
         try {
-            this.route = Double.valueOf((String) route);
+            this.route = Double.valueOf(route).toString();
         } catch (NumberFormatException e) {
-            this.route = route.toString();
+            this.route = route;
         }
     }
 }

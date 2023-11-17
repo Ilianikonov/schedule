@@ -58,7 +58,7 @@ public class ConvertController {
         filterDto.setDateStart(filterRequest.getDate_start());
         filterDto.setDateEnd(filterRequest.getDate_end());
         filterDto.setDepo(filterRequest.getDepo());
-        filterDto.setRoute(filterRequest.getRoute().toString());
+        filterDto.setRoute(filterRequest.getRoute());
         return filterDto;
     }
     private String convertToTimeResponse(String time){
