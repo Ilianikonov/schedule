@@ -5,6 +5,7 @@ import com.schedule.dto.*;
 import com.schedule.entity.Depo;
 import com.schedule.entity.Route;
 import com.schedule.entity.Schedule;
+import com.schedule.exception.FilterFaultException;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
@@ -56,6 +57,11 @@ public class ScheduleService implements ScheduleServiceInter {
     @Override
     @Transactional
     public List<ScheduleDto> getSchedule(FilterDto filterDto) {
+        if (filterDto.getDateStart() == (null) && filterDto.getDateEnd() == null && filterDto.getDepo() == null && filterDto.getRoute() == null){
+            throw new FilterFaultException("Фильтр пуст, укажите хотя бы один параметр");
+        } else if (filterDto.getDateEnd() == null){
+            filterDto.setDateEnd(LocalDate.now());
+        }
         LocalDate filterDateStart = filterDto.getDateStart();
         LocalDate filterDateEnd = filterDto.getDateEnd();
         Long filterDepoId = filterDto.getDepo();
@@ -153,7 +159,7 @@ public class ScheduleService implements ScheduleServiceInter {
                 int count = i;
                 while (!ITOGO_CELL_VALUE.equals(convert.convertCellToString(sheet.getRow(count).getCell(shift)))) {
                     count++;
-                    if (sheet.getRow(count) != null && sheet.getRow(count).getCell(shift) != null && !sheet.getRow(count).getCell(shift).equals("") && !ITOGO_CELL_VALUE.equals(sheet.getRow(count).getCell(shift)) && !VSEGO_CELL_VALUE.equals(sheet.getRow(count).getCell(shift))) {
+                    if (sheet.getRow(count) != null && convert.convertCellToString(sheet.getRow(count).getCell(shift)) != null && !ITOGO_CELL_VALUE.equals(sheet.getRow(count).getCell(shift)) && !VSEGO_CELL_VALUE.equals(sheet.getRow(count).getCell(shift))) {
                         RouteDto routeDto = new RouteDto();
                         routeDto.setNumber(convert.convertCellToString(sheet.getRow(count).getCell(shift)));
                         List<TimeDto> timeDtos = getNamesOfTimes(sheet, shift);
@@ -176,7 +182,9 @@ public class ScheduleService implements ScheduleServiceInter {
                             timeDtos.get(timeDtos.size() - 1).setFlights(((int) sheet.getRow(count).getCell(timeDtos.size() * 2 + 1 + shift).getNumericCellValue()));
                         }
                         routeDto.setTimeDto(timeDtos);
-                        routeDtos.add(routeDto);
+                        if(routeDto.getNumber() != null && !routeDto.getNumber().equals("") && !ITOGO_CELL_VALUE.equals(routeDto.getNumber()) && !VSEGO_CELL_VALUE.equals(routeDto.getNumber())){
+                            routeDtos.add(routeDto);
+                        }
                     }
                     int r = count;
                     if (sheet.getRow(count) == null){

@@ -14,6 +14,9 @@ import org.springframework.stereotype.Component;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+
+import static java.lang.Double.isNaN;
+
 @Component
 public class Convert {
     public List<TimeRoute> convertToTimeRoute(List<TimeDto> timeDtoList, Route route){

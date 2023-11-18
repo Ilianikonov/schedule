@@ -1,6 +1,7 @@
 package com.schedule.controller.advice;
 
 import com.schedule.controller.response.ErrorResponse;
+import com.schedule.exception.FilterFaultException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,17 +16,10 @@ public class GlobalControllerAdvice {
         String message = "во время обработки произошла ошибка";
         return buildResponseEntity(exception, HttpStatus.INTERNAL_SERVER_ERROR, message);
     }
-//
-//    @ExceptionHandler(CodeIsOccupiedException.class)
-//    public ResponseEntity<ErrorResponse> handleException(CodeIsOccupiedException codeIsOccupiedException){
-//        return buildResponseEntity(codeIsOccupiedException, HttpStatus.BAD_REQUEST, codeIsOccupiedException.getMessage());
-//    }
-//
-//    @ExceptionHandler(NotFoundTramRouteException.class)
-//    public ResponseEntity<ErrorResponse> handleException(NotFoundTramRouteException notFoundTramRouteException){
-//        return buildResponseEntity(notFoundTramRouteException, HttpStatus.NOT_FOUND, notFoundTramRouteException.getMessage());
-//    }
-//
+    @ExceptionHandler(FilterFaultException.class)
+    public ResponseEntity<ErrorResponse> handleException(FilterFaultException filterFaultException){
+        return buildResponseEntity(filterFaultException, HttpStatus.NOT_FOUND, filterFaultException.getMessage());
+    }
     private ResponseEntity<ErrorResponse> buildResponseEntity(Exception exception, HttpStatus httpStatus, String message){
         log.error(exception.getMessage(), exception);
         ErrorResponse errorResponse = new ErrorResponse();

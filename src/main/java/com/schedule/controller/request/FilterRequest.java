@@ -11,10 +11,14 @@ public class FilterRequest {
     private String route; //Номер маршрута (его number).
 
     public void setRoute(String route) {
-        try {
-            this.route = Double.valueOf(route).toString();
-        } catch (NumberFormatException e) {
-            this.route = route;
+        if (route == null) {
+            this.route = null;
+        } else {
+            try {
+                this.route = Double.valueOf(route).toString();
+            } catch (NumberFormatException e) {
+                this.route = route;
+            }
         }
     }
 }
