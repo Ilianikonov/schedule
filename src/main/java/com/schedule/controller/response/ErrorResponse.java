@@ -4,5 +4,5 @@ import lombok.Data;
 
 @Data
 public class ErrorResponse {
-    private String massage;
+    private String message;
 }

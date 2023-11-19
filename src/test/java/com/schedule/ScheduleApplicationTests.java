@@ -26,8 +26,8 @@ class ScheduleApplicationTests {
     private MockMvc mockMvc;
     @Autowired
     private ObjectMapper objectMapper;
-    private static String GET_SCHEDULE_ACTUAL = "/getScheduleActual";
-    private static String GET_SCHEDULE = "/getSchedule";
+    private static final String GET_SCHEDULE_ACTUAL = "/getScheduleActual";
+    private static final String GET_SCHEDULE = "/getSchedule";
 
     @Test
     void getCurrentSchedule() throws Exception {
@@ -45,8 +45,11 @@ class ScheduleApplicationTests {
 
     }
 
-    //Если указано только date_start - выдать общее количество рейсов по всем депо
-    // и по всем маршрутам с указанной даты по текущий день.
+    /**
+     * Если указано только date_start - выдать общее количество рейсов по всем депо
+     * и по всем маршрутам с указанной даты по текущий день.
+     * @throws Exception - когда фильтер пуст
+     */
     @Test
     void getScheduleTest1() throws Exception {
         LocalDate dateStart = LocalDate.of(2023,11,5);

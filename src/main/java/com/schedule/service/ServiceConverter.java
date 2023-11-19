@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component
-public class Convert {
+public class ServiceConverter {
     public List<TimeRoute> convertToTimeRoute(List<TimeDto> timeDtoList, Route route){
         List<TimeRoute> timeRouteList = new ArrayList<>();
         for (TimeDto timeDto : timeDtoList) {
@@ -105,13 +105,31 @@ public class Convert {
         }
         return timeDtoList;
     }
+
     public String convertDateToString(LocalDateTime date){
         return date.getHour() + ":" + date.getMinute();
     }
+
     public String convertCellToString(Cell cell){
         if(cell != null && !cell.equals("")){
-            return cell.toString();
+            return normalizeValue(cell.toString());
         }
         return null;
+    }
+    private String normalizeValue(String line) {
+        if (isDouble(line)) {
+            return "" + (int) Double.parseDouble(line);
+        }
+
+        return line;
+    }
+
+    private boolean isDouble(String str) {
+        try {
+            Double.parseDouble(str);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
     }
 }

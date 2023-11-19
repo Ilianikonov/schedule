@@ -5,14 +5,16 @@ import com.schedule.controller.request.FilterRequest;
 import com.schedule.controller.response.DepoResponse;
 import com.schedule.controller.response.RouteResponse;
 import com.schedule.dto.*;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
 import java.util.*;
 
 @Component
-public class ConvertController {
-    RuleBasedNumberFormat nf = new RuleBasedNumberFormat(Locale.forLanguageTag("en"),
-            RuleBasedNumberFormat.SPELLOUT);
+@RequiredArgsConstructor
+public class ResponseConverter {
+    private final RuleBasedNumberFormat nf;
     public List<Map<String,Object>> convertToScheduleResponse(List<ScheduleDto> scheduleDtoList){
         List<Map<String,Object>> scheduleResponseList = new ArrayList<>();
 
@@ -56,7 +58,7 @@ public class ConvertController {
     public FilterDto convertToFilterDto(FilterRequest filterRequest){
         FilterDto filterDto = new FilterDto();
         filterDto.setDateStart(filterRequest.getDate_start());
-        filterDto.setDateEnd(filterRequest.getDate_end());
+        filterDto.setDateEnd(filterRequest.getDate_end() == null ? LocalDate.now() : filterRequest.getDate_end());
         filterDto.setDepo(filterRequest.getDepo());
         filterDto.setRoute(filterRequest.getRoute());
         return filterDto;
