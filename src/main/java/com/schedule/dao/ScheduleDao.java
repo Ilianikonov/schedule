@@ -30,7 +30,7 @@ public class ScheduleDao {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<Schedule> queryScnedule = cb.createQuery(Schedule.class);
         Root<Schedule> rootSchedule = queryScnedule.from(Schedule.class);
-        queryScnedule.select(rootSchedule);
+
         List<Predicate> predicates = new ArrayList<>();
         if (filterDateEnd != null && filterDateStart != null) {
             predicates.add(cb.between(rootSchedule.get("date"), filterDateStart, filterDateEnd));

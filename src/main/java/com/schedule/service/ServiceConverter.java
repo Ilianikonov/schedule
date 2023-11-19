@@ -17,6 +17,7 @@ import java.util.List;
 
 @Component
 public class ServiceConverter {
+
     public List<TimeRoute> convertToTimeRoute(List<TimeDto> timeDtoList, Route route){
         List<TimeRoute> timeRouteList = new ArrayList<>();
         for (TimeDto timeDto : timeDtoList) {
@@ -30,12 +31,14 @@ public class ServiceConverter {
         }
         return timeRouteList;
     }
+
     public Schedule convertScheduleDtoToSchedule(ScheduleDto scheduleDto){
         Schedule schedule = new Schedule();
         schedule.setDate(scheduleDto.getDate());
         schedule.setDepoList(convertToDepo(scheduleDto.getDepoDto(), schedule));
         return schedule;
     }
+
     public List<Depo> convertToDepo(List<DepoDto> depoDtoList, Schedule schedule){
         List<Depo> depoList = new ArrayList<>();
         for (DepoDto depoDto : depoDtoList) {
@@ -47,6 +50,7 @@ public class ServiceConverter {
         }
         return depoList;
     }
+
     public List<Route> convertToRoute(List<RouteDto> routeDtoList, Depo depo){
         List<Route> routeList = new ArrayList<>();
         for (RouteDto routeDto : routeDtoList) {
@@ -58,6 +62,7 @@ public class ServiceConverter {
         }
         return routeList;
     }
+
     public List<ScheduleDto> convertScheduleToScheduleDto(List<Schedule> scheduleList) {
         List<ScheduleDto> scheduleDtoList = new ArrayList<>();
         for (Schedule schedule:scheduleList) {
@@ -69,6 +74,7 @@ public class ServiceConverter {
         }
         return scheduleDtoList;
     }
+
     public List<DepoDto> convertToDepoDpo(List<Depo> depoList){
         List<DepoDto> depoDtoList = new ArrayList<>();
         for (Depo depo: depoList) {
@@ -116,6 +122,7 @@ public class ServiceConverter {
         }
         return null;
     }
+
     private String normalizeValue(String line) {
         if (isDouble(line)) {
             return "" + (int) Double.parseDouble(line);

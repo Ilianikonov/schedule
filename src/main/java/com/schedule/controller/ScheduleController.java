@@ -18,6 +18,7 @@ public interface ScheduleController {
 
     @GetMapping("/getSchedule")
     List<Map<String,Object>> getSchedule(@RequestBody FilterRequest filterRequest);
+
     @GetMapping("/getScheduleActual")
     List<Map<String,Object>> getCurrentSchedule();
 }

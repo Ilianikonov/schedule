@@ -15,9 +15,9 @@ import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
-public class ScheduleControllerImpl implements ScheduleController {
-private final ScheduleServiceImpl scheduleServiceImpl;
-private final ResponseConverter responseConverter;
+    public class ScheduleControllerImpl implements ScheduleController {
+    private final ScheduleServiceImpl scheduleServiceImpl;
+    private final ResponseConverter responseConverter;
 
     @Override
     public void uploadSchedule(MultipartFile schedule) throws IOException {
@@ -36,6 +36,7 @@ private final ResponseConverter responseConverter;
         List<ScheduleDto> scheduleDtoList = scheduleServiceImpl.getCurrentSchedule();
         return responseConverter.convertToScheduleResponse(scheduleDtoList);
     }
+
     private void validateFilterRequest(FilterRequest filterRequest) {
         if (filterRequest.getDate_start() == null && filterRequest.getDate_end() == null && filterRequest.getDepo() == null && filterRequest.getRoute() == null){
             throw new FilterFaultException("Фильтр пуст, укажите хотя бы один параметр!");

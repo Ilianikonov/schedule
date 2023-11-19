@@ -18,9 +18,9 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class ResponseConverter {
     private final RuleBasedNumberFormat nf;
+
     public List<Map<String,Object>> convertToScheduleResponse(List<ScheduleDto> scheduleDtoList){
         List<Map<String,Object>> scheduleResponseList = new ArrayList<>();
-
         for (ScheduleDto scheduleDto:scheduleDtoList) {
             for (DepoDto depoDto: scheduleDto.getDepoDto()) {
                 for (RouteDto routeDto : depoDto.getRouteDto()) {

@@ -6,5 +6,4 @@ import lombok.Data;
 public class RouteResponse {
     private long id;
     private String number;
-
 }
