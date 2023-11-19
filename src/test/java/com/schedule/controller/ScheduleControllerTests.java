@@ -48,7 +48,7 @@ class ScheduleControllerTests {
     /**
      * Если указано только date_start - выдать общее количество рейсов по всем депо
      * и по всем маршрутам с указанной даты по текущий день.
-     * @throws Exception - когда фильтер пуст
+     * @throws Exception - при пустом фильтре.
      */
     @Test
     void getScheduleTest1() throws Exception {
@@ -69,8 +69,11 @@ class ScheduleControllerTests {
         }
     }
 
-    //Если указано только date_end - выдать общее количество рейсов по всем депо и по всем
-    // маршрутам с даты самой первой записи (с начала ведения расписания) по указанную дату
+    /**
+     * Если указано только date_end - выдать общее количество рейсов по всем депо и по всем
+     * маршрутам с даты самой первой записи (с начала ведения расписания) по указанную дату
+     * @throws Exception - при пустом фильтре.
+     */
     @Test
     void getScheduleTest2() throws Exception {
         LocalDate dateEnd = LocalDate.of(2023,11,5);
@@ -90,8 +93,11 @@ class ScheduleControllerTests {
         }
     }
 
-    // Если указано только depo - выдать общее количество рейсов
-    // по указанному депо по всем маршрутам за все время
+    /**
+     *   Если указано только depo - выдать общее количество рейсов
+     *   по указанному депо по всем маршрутам за все время
+     * @throws Exception - при пустом фильтре.
+     */
     @Test
     void getScheduleTest3() throws Exception {
         long depo = 1;
@@ -109,8 +115,11 @@ class ScheduleControllerTests {
         }
     }
 
-    // Если указано только route - выдать общее количество рейсов
-    // по всем депо по указанному маршруту за все время
+    /**
+     *  Если указано только route - выдать общее количество рейсов
+     *  по всем депо по указанному маршруту за все время
+     * @throws Exception - кпри пустом фильтре.
+     */
     @Test
     void getScheduleTest4() throws Exception {
         String route = "3";
@@ -128,8 +137,11 @@ class ScheduleControllerTests {
         }
     }
 
-    // Если указано только date_start и date_end - выдать общее количество рейсов
-    // по всем депо по всем маршрутам за указанное время
+    /**
+     * Если указано только date_start и date_end - выдать общее количество рейсов
+     * по всем депо по всем маршрутам за указанное время
+     * @throws Exception - при пустом фильтре.
+     */
     @Test
     void getScheduleTest5() throws Exception {
         LocalDate dateStart = LocalDate.of(2023,11,9);
@@ -157,8 +169,11 @@ class ScheduleControllerTests {
         }
     }
 
-    // Если указано только date_start и depo - выдать общее количество рейсов по указанному
-    // депо по всем маршрутам с указанной даты по текущий день
+    /**
+     * Если указано только date_start и depo - выдать общее количество рейсов по указанному
+     * депо по всем маршрутам с указанной даты по текущий день
+     * @throws Exception - при пустом фильтре.
+     */
     @Test
     void getScheduleTest6() throws Exception {
         LocalDate dateStart = LocalDate.of(2023,11,5);
@@ -182,8 +197,11 @@ class ScheduleControllerTests {
         }
     }
 
-    // Если указано только date_start и route - выдать общее количество рейсов
-    // по всем депо и по указанному маршруту с указанной даты по текущий день
+    /**
+     * Если указано только date_start и route - выдать общее количество рейсов
+     * по всем депо и по указанному маршруту с указанной даты по текущий день
+     * @throws Exception - при пустом фильтре.
+     */
     @Test
     void getScheduleTest7() throws Exception {
         LocalDate dateStart = LocalDate.of(2023,11,5);
@@ -207,8 +225,11 @@ class ScheduleControllerTests {
         }
     }
 
-    // Если указано только depo и route - выдать общее количество рейсов
-    // по указанному депо и по указанному маршруту за все время
+    /**
+     * Если указано только depo и route - выдать общее количество рейсов
+     * по указанному депо и по указанному маршруту за все время
+     * @throws Exception - при пустом фильтре.
+     */
     @Test
     void getScheduleTest8() throws Exception {
         long depo = 1;
@@ -230,8 +251,11 @@ class ScheduleControllerTests {
         }
     }
 
-    // Если указано только date_ end и depo - выдать общее количество
-    // рейсов по указанному депо по всем маршрутам с начала по указанную дату день.
+    /**
+     * Если указано только date_ end и depo - выдать общее количество
+     * рейсов по указанному депо по всем маршрутам с начала по указанную дату день.
+     * @throws Exception - при пустом фильтре.
+     */
     @Test
     void getScheduleTest9() throws Exception {
         long depo = 1;
@@ -258,8 +282,11 @@ class ScheduleControllerTests {
         }
     }
 
-    // Если указано только date_ end и route - выдать общее количество рейсов
-    // по всем депо по указанному маршруту с начала по указанную дату день
+    /**
+     * Если указано только date_ end и route - выдать общее количество рейсов
+     * по всем депо по указанному маршруту с начала по указанную дату день
+     * @throws Exception - при пустом фильтре.
+     */
     @Test
     void getScheduleTest10() throws Exception {
         String route = "1";
@@ -285,8 +312,11 @@ class ScheduleControllerTests {
         }
     }
 
-    //	Если указано только date_start, date_ end и depo - выдать общее количество рейсов
-    //	по указанному депо по всем маршрутам за указанное время
+    /**
+     * Если указано только date_start, date_ end и depo - выдать общее количество рейсов
+     * по указанному депо по всем маршрутам за указанное время
+     * @throws Exception - при пустом фильтре.
+     */
     @Test
     void getScheduleTest11() throws Exception {
         long depo = 1;
@@ -318,8 +348,11 @@ class ScheduleControllerTests {
         }
     }
 
-    // Если указано только date_start, date_ end и route - выдать
-    // общее количество рейсов по всем депо по указанному маршруту за указанное время
+    /**
+     * Если указано только date_start, date_ end и route - выдать
+     * общее количество рейсов по всем депо по указанному маршруту за указанное время
+     * @throws Exception - при пустом фильтре.
+     */
     @Test
     void getScheduleTest12() throws Exception {
         String route = "1";
@@ -351,8 +384,11 @@ class ScheduleControllerTests {
         }
     }
 
-    // Если указано только date_start, depo и route - выдать общее количество рейсов
-    // по указанному депо по указанному маршруту с указанной даты по текущий день.
+    /**
+     * Если указано только date_start, depo и route - выдать общее количество рейсов
+     * по указанному депо по указанному маршруту с указанной даты по текущий день.
+     * @throws Exception -при пустом фильтре.
+     */
     @Test
     void getScheduleTest13() throws Exception {
         String route = "3";
@@ -381,9 +417,12 @@ class ScheduleControllerTests {
         }
     }
 
-   //	Если указано только date_ end, depo и route - выдать общее количество рейсов
-   //	по указанному депо по указанному маршруту с даты самой первой записи
-   //	(с начала ведения расписания) по указанную дату
+    /**
+     * Если указано только date_ end, depo и route - выдать общее количество рейсов
+     * по указанному депо по указанному маршруту с даты самой первой записи
+     * (с начала ведения расписания) по указанную дату
+     * @throws Exception - при пустом фильтре.
+     */
     @Test
     void getScheduleTest14() throws Exception {
         String route = "3";
@@ -413,8 +452,11 @@ class ScheduleControllerTests {
         }
     }
 
-    // Если указаны все параметры - выдать общее количество рейсов по указанному
-    // депо по указанному маршруту за указанное время
+    /**
+     * Если указаны все параметры - выдать общее количество рейсов по указанному
+     * депо по указанному маршруту за указанное время
+     * @throws Exception - при пустом фильтре.
+     */
     @Test
     void getScheduleTest15() throws Exception {
         String route = "3";
