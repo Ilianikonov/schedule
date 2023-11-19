@@ -11,15 +11,14 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.time.LocalDate;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -37,8 +36,8 @@ class ScheduleControllerTests {
     @Test
     @Order(1)
     void uploadSchedule() throws IOException {
-        InputStream stream = new FileInputStream("/resources/schedule");
-        scheduleService.uploadSchedule(stream);
+        FileInputStream fileInputStream = new FileInputStream("./src/test/resources/schedule.xlsx");
+        scheduleService.uploadSchedule(fileInputStream);
     }
 
     @Test
@@ -63,7 +62,7 @@ class ScheduleControllerTests {
      * @throws Exception - при пустом фильтре.
      */
     @Test
-    void getScheduleTest1() throws Exception {
+    void getScheduleSuccessfullyWithFilter1() throws Exception {
         LocalDate dateStart = LocalDate.of(2023,11,5);
         FilterRequest filterRequest = new FilterRequest();
         filterRequest.setDate_start(dateStart);
@@ -87,7 +86,7 @@ class ScheduleControllerTests {
      * @throws Exception - при пустом фильтре.
      */
     @Test
-    void getScheduleTest2() throws Exception {
+    void getScheduleSuccessfullyWithFilter2() throws Exception {
         LocalDate dateEnd = LocalDate.of(2023,11,5);
         FilterRequest filterRequest = new FilterRequest();
         filterRequest.setDate_end(dateEnd);
@@ -111,7 +110,7 @@ class ScheduleControllerTests {
      * @throws Exception - при пустом фильтре.
      */
     @Test
-    void getScheduleTest3() throws Exception {
+    void getScheduleSuccessfullyWithFilter3() throws Exception {
         long depo = 1;
         FilterRequest filterRequest = new FilterRequest();
         filterRequest.setDepo(depo);
@@ -133,7 +132,7 @@ class ScheduleControllerTests {
      * @throws Exception - кпри пустом фильтре.
      */
     @Test
-    void getScheduleTest4() throws Exception {
+    void getScheduleSuccessfullyWithFilter4() throws Exception {
         String route = "3";
         FilterRequest filterRequest = new FilterRequest();
         filterRequest.setRoute(route);
@@ -155,7 +154,7 @@ class ScheduleControllerTests {
      * @throws Exception - при пустом фильтре.
      */
     @Test
-    void getScheduleTest5() throws Exception {
+    void getScheduleSuccessfullyWithFilter5() throws Exception {
         LocalDate dateStart = LocalDate.of(2023,11,9);
         LocalDate dateEnd = LocalDate.of(2023,11,10);
         FilterRequest filterRequest = new FilterRequest();
@@ -187,7 +186,7 @@ class ScheduleControllerTests {
      * @throws Exception - при пустом фильтре.
      */
     @Test
-    void getScheduleTest6() throws Exception {
+    void getScheduleSuccessfullyWithFilter6() throws Exception {
         LocalDate dateStart = LocalDate.of(2023,11,5);
         long depo = 4;
         FilterRequest filterRequest = new FilterRequest();
@@ -215,7 +214,7 @@ class ScheduleControllerTests {
      * @throws Exception - при пустом фильтре.
      */
     @Test
-    void getScheduleTest7() throws Exception {
+    void getScheduleSuccessfullyWithFilter7() throws Exception {
         LocalDate dateStart = LocalDate.of(2023,11,5);
         String route = "4";
         FilterRequest filterRequest = new FilterRequest();
@@ -243,7 +242,7 @@ class ScheduleControllerTests {
      * @throws Exception - при пустом фильтре.
      */
     @Test
-    void getScheduleTest8() throws Exception {
+    void getScheduleSuccessfullyWithFilter8() throws Exception {
         long depo = 1;
             String route = "3";
         FilterRequest filterRequest = new FilterRequest();
@@ -269,7 +268,7 @@ class ScheduleControllerTests {
      * @throws Exception - при пустом фильтре.
      */
     @Test
-    void getScheduleTest9() throws Exception {
+    void getScheduleSuccessfullyWithFilter9() throws Exception {
         long depo = 1;
         LocalDate dateEnd = LocalDate.of(2023, 11, 7);
         FilterRequest filterRequest = new FilterRequest();
@@ -300,7 +299,7 @@ class ScheduleControllerTests {
      * @throws Exception - при пустом фильтре.
      */
     @Test
-    void getScheduleTest10() throws Exception {
+    void getScheduleSuccessfullyWithFilter10() throws Exception {
         String route = "1";
         LocalDate dateEnd = LocalDate.of(2023,11,7);
         FilterRequest filterRequest = new FilterRequest();
@@ -330,7 +329,7 @@ class ScheduleControllerTests {
      * @throws Exception - при пустом фильтре.
      */
     @Test
-    void getScheduleTest11() throws Exception {
+    void getScheduleSuccessfullyWithFilter11() throws Exception {
         long depo = 1;
         LocalDate dateStart = LocalDate.of(2023,11,3);
         LocalDate dateEnd = LocalDate.of(2023,11,7);
@@ -366,7 +365,7 @@ class ScheduleControllerTests {
      * @throws Exception - при пустом фильтре.
      */
     @Test
-    void getScheduleTest12() throws Exception {
+    void getScheduleSuccessfullyWithFilter12() throws Exception {
         String route = "1";
         LocalDate dateStart = LocalDate.of(2023,11,3);
         LocalDate dateEnd = LocalDate.of(2023,11,7);
@@ -402,7 +401,7 @@ class ScheduleControllerTests {
      * @throws Exception -при пустом фильтре.
      */
     @Test
-    void getScheduleTest13() throws Exception {
+    void getScheduleSuccessfullyWithFilter13() throws Exception {
         String route = "3";
         long depo = 1;
         LocalDate dateStart = LocalDate.of(2023, 11, 5);
@@ -436,7 +435,7 @@ class ScheduleControllerTests {
      * @throws Exception - при пустом фильтре.
      */
     @Test
-    void getScheduleTest14() throws Exception {
+    void getScheduleSuccessfullyWithFilter14() throws Exception {
         String route = "3";
         long depo = 1;
         LocalDate dateEnd = LocalDate.of(2023,11,5);
@@ -470,7 +469,7 @@ class ScheduleControllerTests {
      * @throws Exception - при пустом фильтре.
      */
     @Test
-    void getScheduleTest15() throws Exception {
+    void getScheduleSuccessfullyWithFilter15() throws Exception {
         String route = "3";
         long depo = 1;
         LocalDate dateStart = LocalDate.of(2023,11,2);
@@ -502,5 +501,18 @@ class ScheduleControllerTests {
                 Assertions.fail();
             }
         }
+    }
+
+    /**
+     * @throws Exception -  поля в фильтре не указаны.
+     */
+    @Test
+    void getScheduleWithFilterError() throws Exception {
+        FilterRequest filterRequest = new FilterRequest();
+        mockMvc.perform(get(GET_SCHEDULE)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(filterRequest)))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.message").value("Фильтр пуст, укажите хотя бы один параметр!"));
     }
 }
