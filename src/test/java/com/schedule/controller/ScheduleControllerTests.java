@@ -3,14 +3,17 @@ package com.schedule.controller;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.schedule.controller.request.FilterRequest;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
+import com.schedule.service.ScheduleService;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.time.LocalDate;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -21,13 +24,22 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class ScheduleControllerTests {
     @Autowired
     private MockMvc mockMvc;
     @Autowired
     private ObjectMapper objectMapper;
+    @Autowired
+    private ScheduleService scheduleService;
     private static final String GET_SCHEDULE_ACTUAL = "/getScheduleActual";
     private static final String GET_SCHEDULE = "/getSchedule";
+    @Test
+    @Order(1)
+    void uploadSchedule() throws IOException {
+        InputStream stream = new FileInputStream("/resources/schedule");
+        scheduleService.uploadSchedule(stream);
+    }
 
     @Test
     void getCurrentSchedule() throws Exception {
