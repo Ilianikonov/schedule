@@ -1,6 +1,7 @@
 package com.schedule.controller.advice;
 
 import com.schedule.controller.response.ErrorResponse;
+import com.schedule.exception.DublicateException;
 import com.schedule.exception.FilterFaultException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -20,6 +21,11 @@ public class GlobalControllerAdvice {
     public ResponseEntity<ErrorResponse> handleException(FilterFaultException filterFaultException){
         return buildResponseEntity(filterFaultException, HttpStatus.NOT_FOUND, filterFaultException.getMessage());
     }
+    @ExceptionHandler(DublicateException.class)
+    public ResponseEntity<ErrorResponse> handleException(DublicateException dublicateException){
+        return buildResponseEntity(dublicateException, HttpStatus.CREATED, dublicateException.getMessage());
+    }
+
     private ResponseEntity<ErrorResponse> buildResponseEntity(Exception exception, HttpStatus httpStatus, String message){
         log.error(exception.getMessage(), exception);
         ErrorResponse errorResponse = new ErrorResponse();

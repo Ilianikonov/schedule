@@ -1,6 +1,7 @@
 package com.schedule.controller;
 
 import com.schedule.controller.request.FilterRequest;
+import com.schedule.exception.DublicateException;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -14,7 +15,7 @@ import java.util.Map;
 public interface ScheduleController {
 
     @PostMapping("/uploadSchedule")
-    void uploadSchedule(@RequestParam("schedule") MultipartFile schedule) throws IOException;
+    void uploadSchedule(@RequestParam("schedule") MultipartFile schedule) throws IOException, DublicateException;
 
     @GetMapping("/getSchedule")
     List<Map<String,Object>> getSchedule(@RequestBody FilterRequest filterRequest);

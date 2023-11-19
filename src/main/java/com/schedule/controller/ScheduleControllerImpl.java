@@ -3,6 +3,7 @@ package com.schedule.controller;
 import com.schedule.controller.convert.ConvertController;
 import com.schedule.controller.request.FilterRequest;
 import com.schedule.dto.ScheduleDto;
+import com.schedule.exception.DublicateException;
 import com.schedule.service.ScheduleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.RestController;
@@ -19,7 +20,7 @@ private final ScheduleService scheduleService;
 private final ConvertController convertController;
 
     @Override
-    public void uploadSchedule(MultipartFile schedule) throws IOException {
+    public void uploadSchedule(MultipartFile schedule) throws IOException, DublicateException {
 scheduleService.uploadSchedule(schedule.getInputStream());
     }
 

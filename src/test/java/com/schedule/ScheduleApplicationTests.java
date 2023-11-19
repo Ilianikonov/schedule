@@ -30,7 +30,18 @@ class ScheduleApplicationTests {
     private static String GET_SCHEDULE = "/getSchedule";
 
     @Test
-    void getCurrentSchedule(){
+    void getCurrentSchedule() throws Exception {
+        LocalDate dateStart = LocalDate.of(2023,11,5);
+        FilterRequest filterRequest = new FilterRequest();
+        filterRequest.setDate_start(dateStart);
+        String jsonResult = mockMvc.perform(get(GET_SCHEDULE_ACTUAL))
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+        List<Map<String,Object>> result = objectMapper.readValue(jsonResult, new TypeReference<>() {});
+        for (Map<String,Object> map: result) {
+            LocalDate dateResult = LocalDate.parse(map.get("date").toString());
+             Assertions.assertTrue((dateResult.getYear() == dateStart.getYear() && dateResult.getDayOfYear() == dateStart.getDayOfYear()));
+        }
 
     }
 

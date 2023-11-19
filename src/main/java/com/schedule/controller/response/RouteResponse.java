@@ -2,8 +2,6 @@ package com.schedule.controller.response;
 
 import lombok.Data;
 
-import static java.lang.Double.isNaN;
-
 @Data
 public class RouteResponse {
     private long id;

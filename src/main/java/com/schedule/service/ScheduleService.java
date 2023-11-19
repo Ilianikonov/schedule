@@ -5,6 +5,7 @@ import com.schedule.dto.*;
 import com.schedule.entity.Depo;
 import com.schedule.entity.Route;
 import com.schedule.entity.Schedule;
+import com.schedule.exception.DublicateException;
 import com.schedule.exception.FilterFaultException;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.criteria.CriteriaBuilder;
@@ -14,6 +15,7 @@ import jakarta.persistence.criteria.Root;
 import lombok.RequiredArgsConstructor;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.springframework.dao.NonTransientDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,7 +36,7 @@ public class ScheduleService implements ScheduleServiceInter {
     private static String VSEGO_CELL_VALUE = "Всего";
 
     @Override
-    public void uploadSchedule(InputStream schedule) throws IOException {
+    public void uploadSchedule(InputStream schedule) throws IOException, DublicateException {
         XSSFWorkbook workbook = new XSSFWorkbook(schedule);
         Sheet sheet = workbook.getSheetAt(0);
         int shiftWeekdays = 0;
@@ -49,16 +51,21 @@ public class ScheduleService implements ScheduleServiceInter {
     }
 
     @Transactional
-    public void saveScheduleToDao(Sheet sheet, int shift){
+    public void saveScheduleToDao(Sheet sheet, int shift) throws DublicateException {
         ScheduleDto scheduleDto = buildSchedule(sheet, shift);
-        scheduleRepository.save(convert.convertScheduleDtoToSchedule(scheduleDto));
+        try {
+            scheduleRepository.save(convert.convertScheduleDtoToSchedule(scheduleDto));
+        } catch (NonTransientDataAccessException nonTransientDataAccessException){
+            throw new DublicateException("Расписание на эту дату уже существует!");
+        }
+
     }
 
     @Override
     @Transactional
     public List<ScheduleDto> getSchedule(FilterDto filterDto) {
         if (filterDto.getDateStart() == (null) && filterDto.getDateEnd() == null && filterDto.getDepo() == null && filterDto.getRoute() == null){
-            throw new FilterFaultException("Фильтр пуст, укажите хотя бы один параметр");
+            throw new FilterFaultException("Фильтр пуст, укажите хотя бы один параметр!");
         } else if (filterDto.getDateEnd() == null){
             filterDto.setDateEnd(LocalDate.now());
         }
