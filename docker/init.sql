@@ -3,14 +3,17 @@ drop table if exists route;
 drop table if exists depo;
 drop table if exists schedule;
 
-create table route_time
+create table schedule
 (
-    id    BIGINT auto_increment primary key,
-    route_id int references route (id),
-    name varchar(50) not null,
-    time_total int,
-    time_obk int,
-    time_flights int
+    id BIGINT auto_increment primary key,
+    date date not null unique
+);
+
+create table depo
+(
+    id BIGINT auto_increment primary key,
+    schedule_id int references schedule (id),
+    name varchar(500) NOT NULL
 );
 
 create table route
@@ -20,17 +23,14 @@ create table route
     number varchar(50) NOT NULL
 );
 
-create table depo
+create table route_time
 (
-    id BIGINT auto_increment primary key,
-    schedule_id int references schedule (id),
-    name varchar(500) NOT NULL unique
-);
-
-create table schedule
-(
-    id BIGINT auto_increment primary key,
-    date date not null unique
+    id    BIGINT auto_increment primary key,
+    route_id int references route (id),
+    name varchar(50) not null,
+    time_total int,
+    time_obk int,
+    time_flights int
 );
 
 create index schedule_date_index on schedule(date);
