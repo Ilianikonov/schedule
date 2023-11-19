@@ -9,7 +9,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 @Component
 @RequiredArgsConstructor
@@ -55,6 +58,7 @@ public class ResponseConverter {
         }
         return scheduleResponseList;
     }
+
     public FilterDto convertToFilterDto(FilterRequest filterRequest){
         FilterDto filterDto = new FilterDto();
         filterDto.setDateStart(filterRequest.getDate_start());
@@ -63,6 +67,7 @@ public class ResponseConverter {
         filterDto.setRoute(filterRequest.getRoute());
         return filterDto;
     }
+
     private String convertToTimeResponse(String time){
         String[] s = time.split(":");
         String hour;
@@ -81,5 +86,4 @@ public class ResponseConverter {
             return hour + min;
         }
     }
-
 }

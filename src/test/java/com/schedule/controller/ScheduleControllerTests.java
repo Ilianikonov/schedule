@@ -1,4 +1,4 @@
-package com.schedule;
+package com.schedule.controller;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -21,7 +21,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
-class ScheduleApplicationTests {
+class ScheduleControllerTests {
     @Autowired
     private MockMvc mockMvc;
     @Autowired

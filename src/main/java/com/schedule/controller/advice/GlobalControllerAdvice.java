@@ -29,7 +29,7 @@ public class GlobalControllerAdvice {
     private ResponseEntity<ErrorResponse> buildResponseEntity(Exception exception, HttpStatus httpStatus, String message){
         log.error(exception.getMessage(), exception);
         ErrorResponse errorResponse = new ErrorResponse();
-        errorResponse.setMassage(message);
+        errorResponse.setMessage(message);
         return new ResponseEntity<>(errorResponse, httpStatus);
     }
 }

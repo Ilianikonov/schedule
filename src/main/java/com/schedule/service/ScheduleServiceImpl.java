@@ -24,9 +24,10 @@ import java.util.List;
 public class ScheduleServiceImpl implements ScheduleService {
     private final ScheduleRepository scheduleRepository;
     private final ScheduleDao scheduleDao;
+
     private final ServiceConverter serviceConverter;
-    private static String ITOGO_CELL_VALUE = "Итого";
-    private static String VSEGO_CELL_VALUE = "Всего";
+    private static final String ITOGO_CELL_VALUE = "Итого";
+    private static final String VSEGO_CELL_VALUE = "Всего";
 
     @Override
     @Transactional
@@ -38,6 +39,7 @@ public class ScheduleServiceImpl implements ScheduleService {
         saveScheduleToDao(sheet, shiftWeekdays);
         saveScheduleToDao(sheet, shiftWeekend);
     }
+
     @Override
     public List<ScheduleDto> getCurrentSchedule() {
         LocalDate date = LocalDateTime.now().toLocalDate();
