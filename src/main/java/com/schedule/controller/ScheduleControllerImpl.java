@@ -21,7 +21,7 @@ private final ResponseConverter responseConverter;
 
     @Override
     public void uploadSchedule(MultipartFile schedule) throws IOException {
-scheduleServiceImpl.uploadSchedule(schedule.getInputStream());
+        scheduleServiceImpl.uploadSchedule(schedule.getInputStream());
     }
 
     @Override
