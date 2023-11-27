@@ -24,7 +24,7 @@ public class ScheduleDao {
     public List<Schedule> getScheduleList(FilterDto filterDto) {
         LocalDate filterDateStart = filterDto.getDateStart();
         LocalDate filterDateEnd = filterDto.getDateEnd();
-        Long filterDepoId = filterDto.getDepo();
+        String filterDepoName = filterDto.getDepo();
         String filterRouteNumber = filterDto.getRoute();
 
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
@@ -47,11 +47,11 @@ public class ScheduleDao {
 
         List<Schedule> scheduleList = entityManager.createQuery(queryScnedule).getResultList();
 
-        if(filterDepoId != null){
+        if(filterDepoName != null){
             for (Schedule schedule: scheduleList) {
                 List<Depo> filteredDepoList = new ArrayList<>();
                 for (Depo depo: schedule.getDepoList()) {
-                    if (depo.getId() == filterDepoId){
+                    if (depo.getName().equals(filterDepoName)){
                         filteredDepoList.add(depo);
                     }
                 }

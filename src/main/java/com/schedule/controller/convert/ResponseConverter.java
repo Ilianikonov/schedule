@@ -19,7 +19,7 @@ import java.util.Map;
 public class ResponseConverter {
     private final RuleBasedNumberFormat nf;
 
-    public List<Map<String,Object>> convertToScheduleResponse(List<ScheduleDto> scheduleDtoList){
+    public List<Map<String,Object>> convertToListMap(List<ScheduleDto> scheduleDtoList){
         List<Map<String,Object>> scheduleResponseList = new ArrayList<>();
         for (ScheduleDto scheduleDto:scheduleDtoList) {
             for (DepoDto depoDto: scheduleDto.getDepoDto()) {

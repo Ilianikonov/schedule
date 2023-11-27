@@ -75,6 +75,14 @@ public class ServiceConverter {
         return scheduleDtoList;
     }
 
+    public ScheduleDto convertScheduleToScheduleDto(Schedule schedule) {
+        ScheduleDto scheduleDto = new ScheduleDto();
+        scheduleDto.setId(schedule.getId());
+        scheduleDto.setDate(schedule.getDate());
+        scheduleDto.setDepoDto(convertToDepoDpo(schedule.getDepoList()));
+        return scheduleDto;
+    }
+
     public List<DepoDto> convertToDepoDpo(List<Depo> depoList){
         List<DepoDto> depoDtoList = new ArrayList<>();
         for (Depo depo: depoList) {

@@ -3,6 +3,8 @@ package com.schedule.controller;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.schedule.controller.request.FilterRequest;
+import com.schedule.controller.response.ScheduleResponse;
+import com.schedule.dao.ScheduleRepository;
 import com.schedule.service.ScheduleService;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +13,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.io.*;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -31,6 +34,8 @@ class ScheduleControllerTests {
     private ObjectMapper objectMapper;
     @Autowired
     private ScheduleService scheduleService;
+    @Autowired
+    private ScheduleRepository scheduleRepository;
     private static final String GET_SCHEDULE_ACTUAL = "/getScheduleActual";
     private static final String GET_SCHEDULE = "/getSchedule";
     @Test
@@ -42,16 +47,19 @@ class ScheduleControllerTests {
 
     @Test
     void getCurrentSchedule() throws Exception {
-        LocalDate dateStart = LocalDate.of(2023,11,5);
-        FilterRequest filterRequest = new FilterRequest();
-        filterRequest.setDate_start(dateStart);
+        LocalDate date = LocalDate.of(2023,11,8);
+        LocalDate date1 = LocalDate.of(2023,11,4);
         String jsonResult = mockMvc.perform(get(GET_SCHEDULE_ACTUAL))
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
-        List<Map<String,Object>> result = objectMapper.readValue(jsonResult, new TypeReference<>() {});
-        for (Map<String,Object> map: result) {
-            LocalDate dateResult = LocalDate.parse(map.get("date").toString());
-             Assertions.assertTrue((dateResult.getYear() == dateStart.getYear() && dateResult.getDayOfYear() == dateStart.getDayOfYear()));
+        List<ScheduleResponse> result = objectMapper.readValue(jsonResult, new TypeReference<>() {});
+        for (ScheduleResponse map: result) {
+            LocalDate dateResult = LocalDate.parse(map.getDate().toString());
+            if((dateResult.getYear() == date.getYear() && dateResult.getDayOfYear() == date.getDayOfYear()) || (dateResult.getYear() == date1.getYear() && dateResult.getDayOfYear() == date1.getDayOfYear())){
+                Assertions.assertTrue(true);
+            } else {
+                Assertions.assertTrue(false);
+            }
         }
 
     }
@@ -111,18 +119,20 @@ class ScheduleControllerTests {
      */
     @Test
     void getScheduleSuccessfullyWithFilter3() throws Exception {
-        long depo = 1;
+        String depo = "Краснопресненское трамвайное депо";
         FilterRequest filterRequest = new FilterRequest();
         filterRequest.setDepo(depo);
-        String jsonResult = mockMvc.perform(get(GET_SCHEDULE)
+        byte[] jsonResult = (mockMvc.perform(get(GET_SCHEDULE)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(filterRequest)))
                 .andExpect(status().isOk())
-                .andReturn().getResponse().getContentAsString();
+                .andReturn().getResponse().getContentAsByteArray());
         List<Map<String,Object>> result = objectMapper.readValue(jsonResult, new TypeReference<>() {});
+        System.out.println(result);
         for (Map<String,Object> map: result) {
-            LinkedHashMap<String, Object> depoMapResult = (LinkedHashMap<String, Object>) map.get("depo");
-                Assertions.assertEquals(Long.valueOf(depoMapResult.get("id").toString()),depo);
+            System.out.println(map);
+            String name = ((Map<String,Object>)map.get("depo")).get("name").toString();
+            Assertions.assertEquals(name,depo);
         }
     }
 
@@ -165,9 +175,9 @@ class ScheduleControllerTests {
                         .content(objectMapper.writeValueAsString(filterRequest)))
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
-        List<Map<String,Object>> result = objectMapper.readValue(jsonResult, new TypeReference<>() {});
-        for (Map<String,Object> map: result) {
-            LocalDate dateResult = LocalDate.parse(map.get("date").toString());
+        List<Map<String,String>> result = objectMapper.readValue(jsonResult, new TypeReference<>() {});
+        for (Map<String,String> map: result) {
+            LocalDate dateResult = LocalDate.parse(map.get("date"));
             if (dateResult.getYear() > dateStart.getYear() && dateResult.getDayOfYear() < dateEnd.getDayOfYear()) {
                 Assertions.assertTrue(true);
             } else if(dateResult.getYear() == dateStart.getYear() && dateResult.getDayOfYear() >= dateStart.getDayOfYear()){
@@ -188,20 +198,20 @@ class ScheduleControllerTests {
     @Test
     void getScheduleSuccessfullyWithFilter6() throws Exception {
         LocalDate dateStart = LocalDate.of(2023,11,5);
-        long depo = 4;
+        String depo = "Краснопресненское трамвайное депо";
         FilterRequest filterRequest = new FilterRequest();
         filterRequest.setDate_start(dateStart);
         filterRequest.setDepo(depo);
-        String jsonResult = mockMvc.perform(get(GET_SCHEDULE)
+        byte[] jsonResult = mockMvc.perform(get(GET_SCHEDULE)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(filterRequest)))
                 .andExpect(status().isOk())
-                .andReturn().getResponse().getContentAsString();
+                .andReturn().getResponse().getContentAsByteArray();
         List<Map<String,Object>> result = objectMapper.readValue(jsonResult, new TypeReference<>() {});
         for (Map<String,Object> map: result) {
             LocalDate dateResult = LocalDate.parse(map.get("date").toString());
-            LinkedHashMap<String, Object> depoMapResult = (LinkedHashMap<String, Object>) map.get("depo");
-            Assertions.assertEquals(Long.valueOf(depoMapResult.get("id").toString()),depo);
+            String name = ((Map<String,Object>)map.get("depo")).get("name").toString();
+            Assertions.assertEquals(name,depo);
             if (dateResult.getYear() > dateStart.getYear()) {
                 Assertions.assertTrue(true);
             } else Assertions.assertTrue((dateResult.getYear() == dateStart.getYear() && dateResult.getDayOfYear() >= dateStart.getDayOfYear()));
@@ -243,8 +253,8 @@ class ScheduleControllerTests {
      */
     @Test
     void getScheduleSuccessfullyWithFilter8() throws Exception {
-        long depo = 1;
-            String route = "3";
+        String depo = "Краснопресненское трамвайное депо";
+        String route = "3";
         FilterRequest filterRequest = new FilterRequest();
         filterRequest.setDepo(depo);
         filterRequest.setRoute(route);
@@ -269,22 +279,22 @@ class ScheduleControllerTests {
      */
     @Test
     void getScheduleSuccessfullyWithFilter9() throws Exception {
-        long depo = 1;
+        String depo = "Краснопресненское трамвайное депо";
         LocalDate dateEnd = LocalDate.of(2023, 11, 7);
         FilterRequest filterRequest = new FilterRequest();
         filterRequest.setDepo(depo);
         filterRequest.setDate_end(dateEnd);
-        String jsonResult = mockMvc.perform(get(GET_SCHEDULE)
+        byte[] jsonResult = mockMvc.perform(get(GET_SCHEDULE)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(filterRequest)))
                 .andExpect(status().isOk())
-                .andReturn().getResponse().getContentAsString();
+                .andReturn().getResponse().getContentAsByteArray();
         List<Map<String, Object>> result = objectMapper.readValue(jsonResult, new TypeReference<>() {
         });
         for (Map<String, Object> map : result) {
             LocalDate dateResult = LocalDate.parse(map.get("date").toString());
-            LinkedHashMap<String, Object> depoMapResult = (LinkedHashMap<String, Object>) map.get("depo");
-            Assertions.assertEquals(Long.valueOf(depoMapResult.get("id").toString()), depo);
+            String name = ((Map<String,Object>)map.get("depo")).get("name").toString();
+            Assertions.assertEquals(name,depo);
             if (dateResult.getYear() < dateEnd.getYear()) {
                 Assertions.assertTrue(true);
             } else
@@ -330,23 +340,23 @@ class ScheduleControllerTests {
      */
     @Test
     void getScheduleSuccessfullyWithFilter11() throws Exception {
-        long depo = 1;
+        String depo = "Краснопресненское трамвайное депо";
         LocalDate dateStart = LocalDate.of(2023,11,3);
         LocalDate dateEnd = LocalDate.of(2023,11,7);
         FilterRequest filterRequest = new FilterRequest();
         filterRequest.setDepo(depo);
         filterRequest.setDate_start(dateStart);
         filterRequest.setDate_end(dateEnd);
-        String jsonResult = mockMvc.perform(get(GET_SCHEDULE)
+        byte[] jsonResult = mockMvc.perform(get(GET_SCHEDULE)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(filterRequest)))
                 .andExpect(status().isOk())
-                .andReturn().getResponse().getContentAsString();
+                .andReturn().getResponse().getContentAsByteArray();
         List<Map<String,Object>> result = objectMapper.readValue(jsonResult, new TypeReference<>() {});
         for (Map<String, Object> map : result) {
             LocalDate dateResult = LocalDate.parse(map.get("date").toString());
-            LinkedHashMap<String, Object> depoMapResult = (LinkedHashMap<String, Object>) map.get("depo");
-            Assertions.assertEquals(Long.valueOf(depoMapResult.get("id").toString()), depo);
+            String name = ((Map<String,Object>)map.get("depo")).get("name").toString();
+            Assertions.assertEquals(name,depo);
             if (dateResult.getYear() > dateStart.getYear() && dateResult.getDayOfYear() < dateEnd.getDayOfYear()) {
                 Assertions.assertTrue(true);
             } else if(dateResult.getYear() == dateStart.getYear() && dateResult.getDayOfYear() >= dateStart.getDayOfYear()){
@@ -403,7 +413,7 @@ class ScheduleControllerTests {
     @Test
     void getScheduleSuccessfullyWithFilter13() throws Exception {
         String route = "3";
-        long depo = 1;
+        String depo = "Краснопресненское трамвайное депо";
         LocalDate dateStart = LocalDate.of(2023, 11, 5);
         FilterRequest filterRequest = new FilterRequest();
         filterRequest.setRoute(route);
@@ -437,7 +447,7 @@ class ScheduleControllerTests {
     @Test
     void getScheduleSuccessfullyWithFilter14() throws Exception {
         String route = "3";
-        long depo = 1;
+        String depo = "Краснопресненское трамвайное депо";
         LocalDate dateEnd = LocalDate.of(2023,11,5);
         FilterRequest filterRequest = new FilterRequest();
         filterRequest.setRoute(route);
@@ -471,7 +481,7 @@ class ScheduleControllerTests {
     @Test
     void getScheduleSuccessfullyWithFilter15() throws Exception {
         String route = "3";
-        long depo = 1;
+        String depo = "Краснопресненское трамвайное депо";
         LocalDate dateStart = LocalDate.of(2023,11,2);
         LocalDate dateEnd = LocalDate.of(2023,11,5);
         FilterRequest filterRequest = new FilterRequest();

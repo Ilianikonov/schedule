@@ -15,7 +15,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,9 +40,12 @@ public class ScheduleServiceImpl implements ScheduleService {
     }
 
     @Override
+    @Transactional
     public List<ScheduleDto> getCurrentSchedule() {
-        LocalDate date = LocalDateTime.now().toLocalDate();
-        return serviceConverter.convertScheduleToScheduleDto(scheduleRepository.getSchedulesByDate(date));
+        List<ScheduleDto> scheduleDtoList = new ArrayList<>();
+        scheduleDtoList.add(serviceConverter.convertScheduleToScheduleDto(scheduleRepository.getScheduleById(scheduleRepository.getScheduleByDateOrderByDateDesc().get(0))));
+        scheduleDtoList.add(serviceConverter.convertScheduleToScheduleDto(scheduleRepository.getScheduleById(scheduleRepository.getScheduleByDateOrderByDateDesc().get(1))));
+        return scheduleDtoList;
     }
 
     public void saveScheduleToDao(Sheet sheet, int shift) throws DublicateException {

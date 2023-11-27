@@ -28,13 +28,12 @@ import java.util.Map;
     public List<Map<String,Object>> getSchedule(FilterRequest filterRequest) {
         validateFilterRequest(filterRequest);
         List<ScheduleDto> scheduleDtoList = scheduleServiceImpl.getSchedule(responseConverter.convertToFilterDto(filterRequest));
-        return responseConverter.convertToScheduleResponse(scheduleDtoList);
+        return responseConverter.convertToListMap(scheduleDtoList);
     }
 
     @Override
     public List<Map<String,Object>> getCurrentSchedule() {
-        List<ScheduleDto> scheduleDtoList = scheduleServiceImpl.getCurrentSchedule();
-        return responseConverter.convertToScheduleResponse(scheduleDtoList);
+        return responseConverter.convertToListMap(scheduleServiceImpl.getCurrentSchedule());
     }
 
     private void validateFilterRequest(FilterRequest filterRequest) {
